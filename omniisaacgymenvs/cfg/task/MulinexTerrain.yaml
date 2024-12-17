@@ -1,0 +1,472 @@
+name: MulinexTerrain
+
+physics_engine: ${..physics_engine}
+
+env:
+  numEnvs: ${resolve_default:2048,${...num_envs}}
+  numObservations: 36        
+  numStates : 266            
+  numActions: 8              
+  envSpacing: 3.             
+
+  terrain:
+    
+    staticFriction: 1.0                                
+    dynamicFriction: 1.0                               
+    restitution: 0.                                    
+    
+    randomize_terrain: True                            
+    terrain_rand_int_s: 10.0                           
+    
+    lower_staticFriction: 0.7                          
+    upper_staticFriction: 1.0                          
+    lower_dynamicFriction: 0.7                         
+    upper_dynamicFriction: 1.0                         
+    lower_restitution: 0.5                             
+    upper_restitution: 1.0                             
+    
+    on_int_lower_staticFriction: 0.3                   
+    on_int_upper_staticFriction: 1.3                   
+    on_int_lower_dynamicFriction: 0.15                 
+    on_int_upper_dynamicFriction: 1.3                  
+    on_int_lower_restitution: 0.2                      
+    on_int_upper_restitution: 1.0                      
+    
+    
+    curriculum: true                                   
+    maxInitMapLevel: 0                                 
+    mapLength: 4.                                      
+    mapWidth: 4.                                       
+    numLevels: 20                                      
+    numTerrains: 20                                    
+    
+    
+    
+    
+    
+    
+    
+    terrainProportions: [0.2, 0., 0.25, 0.2, 0.15, 0.2]         
+
+    
+    slopeTreshold: 0.2            
+    horizontalScale: 0.05         
+
+  baseInitState:                  
+    pos: [0.0, 0.0, 0.35]         
+    
+    rot: [1.0, 0.0, 0.0, 0.0]     
+    vLinear: [0.0, 0.0, 0.0]      
+    vAngular: [0.0, 0.0, 0.0]     
+
+  randomCommandVelocityRanges:    
+    
+    linear_x: [-1., 1.]           
+    linear_y: [-1., 1.]           
+    yaw: [-3.14, 3.14]            
+    yaw_rate: [-1., 1.]           
+
+  control:
+    
+    Kp:
+      hip: 1.2375                 
+      knee: 1.2375                
+    Kd:
+      hip: 0.006981317            
+      knee: 0.006981317           
+    
+    actionScale: 0.5              
+    
+    decimation: 1                 
+    maxTorque: 5                  
+    useImplicitPD: True           
+
+  defaultJointAngles:        
+
+    LF_HFE: 2.094            
+    LH_HFE: -2.094           
+    RF_HFE: -2.094           
+    RH_HFE: 2.094            
+
+    LF_KFE: -1.0472          
+    LH_KFE: 1.0472           
+    RF_KFE: 1.0472           
+    RH_KFE: -1.0472          
+
+
+
+
+  learn:                                       
+    
+    terminalReward: 0.0
+    
+    linearVelocityXYRewardScale: 1.5           
+    var_lin_vel: 0.02                          
+    
+    linearVelocityZRewardScale: -4.0           
+    vzRewardScale+: 0.05                       
+    fuzzyBlendCoef_vz: 35                      
+    
+    angularVelocityXYRewardScale: -0.05        
+    AngularVelocityRewardScale+: 0.05          
+    fuzzyBlendCoef_rollrate: 850               
+    fuzzyBlendCoef_pitchrate: 850              
+    
+    angularVelocityZPenaltyScale: -0.75        
+    angularVelocityZRewardScale: 0.75          
+    fuzzyBlendCoef_angz: 150                   
+    
+    orientationRewardScale: -0.75              
+    orientationsRewardScale+: 0.025            
+    fuzzyBlendCoef_orient: 50                  
+    
+    torqueRewardScale: -0.                     
+    
+    
+    actionRateRewardScale: -0.0075             
+    actRateRewScale+: 0.05                     
+    actionRateLocalMalus: -0.053               
+    fuzzyBlendCoef_kneeactionRate: 100         
+    fuzzyBlendCoef_hipactionRate: 100          
+    fuzzyBlendCoef_actionRateScale: 2          
+    
+    jointAccRewardScale: -0.0015               
+    jointAccRewScale+: 0.05                    
+    fuzzyBlendCoef_kneeAccel: 255              
+    fuzzyBlendCoef_hipAccel: 255               
+    
+    action_accel: -0.07                        
+    actionAccelRewScale+: 0.1                  
+    fuzzyBlendCoef_kneeactionAccel: 70         
+    fuzzyBlendCoef_hipactionAccel: 70          
+    
+    joint_jerk: -0.0001                        
+    jointJerkRewardScale+: 0.0375              
+    fuzzyBlendCoef_kneej: 20                   
+    fuzzyBlendCoef_hipj: 20                    
+    
+    action_jerk: -0.0005                       
+    actionJerkRewScale+: 0.075                 
+    fuzzyBlendCoef_kneeactionJ: 10             
+    fuzzyBlendCoef_hipactionJ: 10              
+    
+    actionjerk_maxRewardScale: -0.012          
+    actionjerk_maxRewardScale+: 0.             
+    fuzzyBlendCoef_actionjerk_max: 500         
+    jointjerk_maxRewardScale: -0.0018          
+    jointjerk_maxRewardScale+: 0.              
+    fuzzyBlendCoef_jointjerk_max: 500          
+    
+    actionaccel_maxRewardScale: -0.            
+    actionaccel_maxRewardScale+: 0.            
+    fuzzyBlendCoef_actionaccel_max: 500        
+    jointaccel_maxRewardScale: -0.             
+    jointaccel_maxRewardScale+: 0.             
+    fuzzyBlendCoef_jointaccel_max: 500         
+    
+    baseHeightRewardScale: -2.5                
+    des_base_height: 0.316                     
+    base_height_+: 0.05                        
+    fuzzyBlendCoef_base: 50                    
+    
+    fallenOverRewardScale: -1000.0             
+    
+    feetPosZRewardScale: -0.                   
+    feetZScale+: 0.                            
+    fuzzyBlendCoef_feet_posZ: 60               
+    feetPosZ: 0.1                              
+    
+    falcataRewardScale: -10.0                  
+    falcata_des: 0.2                           
+    falcataScale+: 0.1                         
+    fuzzyBlendCoef_falcata: 1                  
+    
+    airtimeRewardScale: -0.7                   
+    airtimeRewardScale+: 0.15                  
+    fuzzyBlendCoef_airtime: 70                 
+    air_time_des: 0.7                          
+    
+    standStillRewardScale: -0.0                
+    
+    hipRewardScale: -0.                        
+    
+    feetAirTime: 0.25
+  
+  
+    
+    linearVelocityScale: 2.0
+    angularVelocityScale: 0.25
+    dofPositionScale: 1.0
+    dofVelocityScale: 0.05
+    heightMeasurementScale: 2.5   
+
+    
+    addNoise: true
+    noiseLevel: 1.0               
+    dofPositionNoise: 0.01
+    dofVelocityNoise: 1.5
+    linearVelocityNoise: 0.1
+    angularVelocityNoise: 0.2     
+    gravityNoise: 0.05            
+    heightMeasurementNoise: 0.06
+
+    
+    pushInterval_s: 15               
+
+    
+    episodeLength_s: 20              
+    
+    use_dataset_percentage: 0.             
+    
+    enable_command_changes: False     
+    command_change_int_s: 12.5        
+    
+    mixed_command_percentage: 0.0    
+
+
+sim:                              
+  dt: 0.005                       
+  up_axis: "z"
+  use_gpu_pipeline: ${eq:${...pipeline},"gpu"}
+  gravity: [0.0, 0.0, -9.81]
+  add_ground_plane: False
+  use_flatcache: True
+  enable_scene_query_support: False
+  disable_contact_processing: True
+
+  
+  enable_cameras: False
+
+  default_physics_material:
+    static_friction: 1.0
+    dynamic_friction: 1.0
+    restitution: 0.0
+
+  physx:
+    worker_thread_count: ${....num_threads}
+    solver_type: ${....solver_type}
+    use_gpu: ${eq:${....sim_device},"gpu"}  
+    solver_position_iteration_count: 4
+    solver_velocity_iteration_count: 0
+    contact_offset: 0.02
+    rest_offset: 0.0
+    bounce_threshold_velocity: 0.2
+    friction_offset_threshold: 0.04
+    friction_correlation_distance: 0.025
+    enable_sleeping: True
+    enable_stabilization: True
+    max_depenetration_velocity: 100.0
+
+    
+    gpu_max_rigid_contact_count: 524288
+    gpu_max_rigid_patch_count: 163840
+    gpu_found_lost_pairs_capacity: 4194304
+    gpu_found_lost_aggregate_pairs_capacity: 33554432   
+    gpu_total_aggregate_pairs_capacity: 4194304
+    gpu_max_soft_body_contacts: 1048576
+    gpu_max_particle_contacts: 1048576
+    gpu_heap_capacity: 134217728
+    gpu_temp_buffer_capacity: 33554432
+    gpu_max_num_partitions: 8
+
+
+  mulinex:  
+    
+    override_usd_defaults: False
+    enable_self_collisions: False   
+    enable_gyroscopic_forces: False
+    
+    
+    solver_position_iteration_count: 4
+    solver_velocity_iteration_count: 0
+    sleep_threshold: 0.005
+    stabilization_threshold: 0.001
+    
+    density: -1
+    max_depenetration_velocity: 100.0
+
+
+
+
+
+  
+  
+  
+    
+  
+    
+      
+      
+      
+      
+      
+  
+
+domain_randomization:     
+  randomize: True         
+  randomization_params:   
+    
+    actions:                      
+      
+      
+      
+      
+      on_interval:      
+        frequency_interval: 250    
+        operation: "additive"
+        distribution: "gaussian"
+        distribution_parameters: [0., 0.000003371]   
+
+    
+    
+    simulation:
+      gravity:                     
+        on_reset:                  
+          operation: "additive"
+          distribution: "uniform"
+          distribution_parameters: [[0.0, 0.0, 0.0], [0.0, 0.0, 2.943]]     
+
+
+    
+    
+    articulation_views:
+      mulinex_view:
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        stiffness:      
+          on_reset:     
+            operation: "scaling"
+            distribution: "uniform"
+            distribution_parameters: [0.95, 1.055]      
+
+          on_interval:  
+            frequency_interval: 2000    
+            operation: "scaling"
+            distribution: "uniform"
+            distribution_parameters: [0.9, 1.1]  
+
+        
+        damping:        
+          on_reset:     
+            operation: "scaling"
+            distribution: "uniform"
+            distribution_parameters: [0.9, 1.1]      
+
+          on_interval:  
+            frequency_interval: 1750    
+            operation: "scaling"
+            distribution: "uniform"
+            distribution_parameters: [0.95, 1.05]  
+
+        
+        joint_friction:   
+          on_reset:       
+            operation: "scaling"
+            distribution: "uniform"
+            distribution_parameters: [0.85, 1.15]      
+          on_interval:    
+            frequency_interval: 1300    
+            operation: "scaling"
+            distribution: "uniform"
+            distribution_parameters: [0.91, 1.09]      
+
+        
+        lower_dof_limits:  
+          on_reset:        
+            operation: "additive"
+            distribution: "gaussian"
+            distribution_parameters: [0., 0.000846]   
+
+          on_interval:     
+            frequency_interval: 1850    
+            operation: "additive"
+            distribution: "gaussian"
+            distribution_parameters: [0., 0.0003046]   
+
+        
+        upper_dof_limits:  
+          on_reset:        
+            operation: "additive"
+            distribution: "gaussian"
+            distribution_parameters: [0., 0.000846]   
+
+          on_interval:     
+            frequency_interval: 1850    
+            operation: "additive"
+            distribution: "gaussian"
+            distribution_parameters: [0., 0.0003046]   
+
+        
+        joint_armatures:  
+          on_reset:       
+            operation: "direct"
+            distribution: "uniform"
+            distribution_parameters: [0.002, 0.002]  
+
+          
+          
+          
+          
+          
+        
+        
+          
+          
+          
+          
+        
+        joint_efforts:   
+          
+          
+          
+          
+          on_interval:     
+            frequency_interval: 2500    
+            operation: "scaling"
+            distribution: "uniform"
+            distribution_parameters: [0.85, 1.15]      
+        
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+        
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+

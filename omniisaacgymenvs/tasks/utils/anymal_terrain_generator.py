@@ -36,9 +36,9 @@ from omniisaacgymenvs.utils.terrain_utils.terrain_utils import *
 # terrain generator
 class Terrain:
     def __init__(self, cfg, num_robots) -> None:
-        self.horizontal_scale = 0.1
+        self.horizontal_scale = cfg.get("horizontalScale", 0.1)
         self.vertical_scale = 0.005
-        self.border_size = 20
+        self.border_size = 20  # 0
         self.num_per_env = 2
         self.env_length = cfg["mapLength"]
         self.env_width = cfg["mapWidth"]
@@ -77,10 +77,10 @@ class Terrain:
             end_y = self.border + (j + 1) * self.width_per_env_pixels
 
             terrain = SubTerrain("terrain",
-                              width=self.width_per_env_pixels,
-                              length=self.width_per_env_pixels,
-                              vertical_scale=self.vertical_scale,
-                              horizontal_scale=self.horizontal_scale)
+                                 width=self.width_per_env_pixels,
+                                 length=self.length_per_env_pixels,
+                                 vertical_scale=self.vertical_scale,
+                                 horizontal_scale=self.horizontal_scale)
             choice = np.random.uniform(0, 1)
             if choice < 0.1:
                 if np.random.choice([0, 1]):
@@ -113,34 +113,89 @@ class Terrain:
         for j in range(num_terrains):
             for i in range(num_levels):
                 terrain = SubTerrain("terrain",
-                                    width=self.width_per_env_pixels,
-                                    length=self.width_per_env_pixels,
-                                    vertical_scale=self.vertical_scale,
-                                    horizontal_scale=self.horizontal_scale)
+                                     width=self.width_per_env_pixels,
+                                     length=self.length_per_env_pixels,
+                                     vertical_scale=self.vertical_scale,
+                                     horizontal_scale=self.horizontal_scale)
                 difficulty = i / num_levels
                 choice = j / num_terrains
 
-                slope = difficulty * 0.4
-                step_height = 0.05 + 0.175 * difficulty
-                discrete_obstacles_height = 0.025 + difficulty * 0.15
-                stepping_stones_size = 2 - 1.8 * difficulty
+#                slope = difficulty * 0.4                                  # [rad] pendenza della rampa
+#                step_height = 0.05 + 0.175 * difficulty                   # [m] altezza gradino piramide
+#                discrete_obstacles_height = 0.025 + difficulty * 0.15     # [m] altezza ostacoli rettangolari
+#                wave_amplitude = 0.04 + 0.12 * difficulty                 # [m] altezza dosso
+#                num_waves = 16
+#                stepping_stones_size = 2 - 1.8 * difficulty               # [m] larghezza delle stepping stones (pedane - pietre)
+                
+                
+#                slope = difficulty * 0.4    
+#                step_height = 0.01 + 7/95 * difficulty
+#                discrete_obstacles_height = 0.005 + difficulty * 7/190
+#                wave_amplitude = 0.01 + 7/190 * difficulty                      # [m] altezza dosso
+#                num_waves = 16
+#                stepping_stones_size = 2 - 1.8 * difficulty
+                
+ #               slope = difficulty * 0.4                                       # [rad] pendenza della rampa
+ #               step_height = 0.025 + 0.175 * difficulty                       # [m] altezza gradino piramide
+ #               discrete_obstacles_height = 0.0125 + difficulty * 0.15         # [m] altezza ostacoli rettangolari
+ #               wave_amplitude = 0.04 + 0.12 * difficulty                      # [m] altezza dosso
+ #               num_waves = 16
+ #               stepping_stones_size = 2 - 1.8 * difficulty                    # [m] larghezza delle stepping stones (pedane - pietre)
+
+#                slope = difficulty * 0.4                                       # [rad] pendenza della rampa
+#                step_height = 0.01 + 0.2 * difficulty                          # [m] altezza gradino piramide
+#                discrete_obstacles_height = 0.005 + difficulty * 0.1           # [m] altezza ostacoli rettangolari
+#                wave_amplitude = 0.01 + 0.1 * difficulty                       # [m] altezza dosso
+#                num_waves = 20
+#                stepping_stones_size = 2 - 1.8 * difficulty                    # [m] larghezza delle stepping stones (pedane - pietre)
+
+                slope = difficulty * 0.388                                       # [rad] pendenza della rampa
+                step_height = 0.01 + 1/18 * difficulty                         # [m] altezza gradino piramide
+                discrete_obstacles_height = 0.005 + difficulty * 1/30          # [m] altezza ostacoli rettangolari
+                wave_amplitude = 0.01 + 1/36 * difficulty                     # [m] altezza dosso
+                num_waves = 20
+                stepping_stones_size = 2 - 1.8 * difficulty                    # [m] larghezza delle stepping stones (pedane - pietre)
+
+
+
                 if choice < self.proportions[0]:
-                    if choice < 0.05:
+                    if choice < 0.5 * self.proportions[0]:     # Versione modificata  per avere 1/2 slope pos e 1/2 neg   (base = 0.05)
                         slope *= -1
-                    pyramid_sloped_terrain(terrain, slope=slope, platform_size=3.)
+                    pyramid_sloped_terrain(terrain, slope=slope, platform_size=1.6)
                 elif choice < self.proportions[1]:
                     if choice < 0.15:
                         slope *= -1
-                    pyramid_sloped_terrain(terrain, slope=slope, platform_size=3.)
+                    pyramid_sloped_terrain(terrain, slope=slope, platform_size=1.6)
                     random_uniform_terrain(terrain, min_height=-0.1, max_height=0.1, step=0.025, downsampled_scale=0.2)
                 elif choice < self.proportions[3]:
                     if choice<self.proportions[2]:
                         step_height *= -1
-                    pyramid_stairs_terrain(terrain, step_width=0.31, step_height=step_height, platform_size=3.)
+                    pyramid_stairs_terrain(terrain, step_width=0.31, step_height=step_height, platform_size=1.6)
                 elif choice < self.proportions[4]:
-                    discrete_obstacles_terrain(terrain, discrete_obstacles_height, 1., 2., 40, platform_size=3.)
+                    discrete_obstacles_terrain(terrain, discrete_obstacles_height, 1., 2., 40, platform_size=1.6)
+                elif choice < self.proportions[5]:
+                    wave_terrain(terrain, num_waves=num_waves, amplitude=wave_amplitude)
                 else:
-                    stepping_stones_terrain(terrain, stone_size=stepping_stones_size, stone_distance=0.1, max_height=0., platform_size=3.)
+                    stepping_stones_terrain(terrain, stone_size=stepping_stones_size, stone_distance=0.1, max_height=0., platform_size=1.6)
+
+
+#                if choice < self.proportions[0]:
+#                    if choice < 0.5 * self.proportions[0]:      # 0.05
+#                        slope *= -1
+#                    pyramid_sloped_terrain(terrain, slope=slope, platform_size=3.)
+#                elif choice < self.proportions[1]:
+#                    if choice < 0.15:
+#                        slope *= -1
+#                    pyramid_sloped_terrain(terrain, slope=slope, platform_size=3.)
+#                    random_uniform_terrain(terrain, min_height=-0.1, max_height=0.1, step=0.025, downsampled_scale=0.2)
+#                elif choice < self.proportions[3]:
+#                    if choice<self.proportions[2]:
+#                        step_height *= -1
+#                    pyramid_stairs_terrain(terrain, step_width=0.31, step_height=step_height, platform_size=3.)
+#                elif choice < self.proportions[4]:
+#                    discrete_obstacles_terrain(terrain, discrete_obstacles_height, 1., 2., 40, platform_size=3.)
+#                else:
+#                    stepping_stones_terrain(terrain, stone_size=stepping_stones_size, stone_distance=0.1, max_height=0., platform_size=3.)
 
                 # Heightfield coordinate system
                 start_x = self.border + i * self.length_per_env_pixels
